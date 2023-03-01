@@ -12,12 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-
 @AllArgsConstructor
 @Configuration
 @EnableWebSecurity
@@ -28,29 +22,28 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain FilterChain(HttpSecurity http) throws Exception {
           http
-                .cors().disable()
-                  .csrf().disable()
-                .authorizeRequests().anyRequest().permitAll()
-                .and()
-                .formLogin().permitAll();
+                .cors().and().csrf().disable()
+                .authorizeRequests().requestMatchers(("/api/v*/registration/**")).permitAll()
+                .anyRequest()
+                .authenticated().and()
+                .formLogin();
           return http.build();
 
     }
 
+
+
+
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        configuration.setAllowedHeaders(Arrays.asList("content-type", "authorization"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider =  new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(bCryptPasswordEncoder);
+        provider.setUserDetailsService(appUserService);
+        return provider;
     }
-
-
-
+    @Bean
+    protected AuthenticationManager authenticationManager(AuthenticationConfiguration auth) throws Exception {
+        return auth.getAuthenticationManager();
+    }
 
 }
