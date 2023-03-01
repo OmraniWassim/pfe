@@ -1,9 +1,6 @@
 package com.ltms.pfe.registration;
 
-import com.ltms.pfe.app.user.AppUser;
-import com.ltms.pfe.app.user.AppUserRepository;
-import com.ltms.pfe.app.user.AppUserRole;
-import com.ltms.pfe.app.user.AppUserService;
+import com.ltms.pfe.app.user.*;
 import com.ltms.pfe.email.EmailSender;
 import com.ltms.pfe.registration.token.ConfirmationToken;
 import com.ltms.pfe.registration.token.ConfirmationTokenRepository;
@@ -15,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -26,6 +24,7 @@ public class RegistrationService {
     private final EmailSender emailSender;
     private final AppUserRepository appUserRepository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
+    private final AppUserDTOMapper appUserDTOMapper;
 
     public String register(RegistrationRequest request) {
         boolean isValidEmail=emailValidator.test(request.getEmail());
@@ -55,11 +54,14 @@ public class RegistrationService {
     }
 
 
-    public List<AppUser> findAllAppUsers () {
-        return appUserRepository.findAll();
+    public List<AppUserDTO> findAllAppUsers () {
+        return appUserRepository.findAll()
+                .stream()
+                .map(appUserDTOMapper)
+                .collect(Collectors.toList());
     }
 
-    public AppUser updateAppUser(RegistrationRequest request,Long id) {
+    public void updateAppUser(RegistrationRequest request,Long id) {
         AppUser appUser=
         new AppUser(
                 id,
@@ -71,10 +73,10 @@ public class RegistrationService {
 
 
         );
-        return appUserRepository.save(appUser);
+        appUserRepository.save(appUser);
     }
-    public AppUser findById(Long id){
-        return appUserRepository.getById(id);
+    public Optional<AppUserDTO> findById(Long id){
+        return appUserRepository.findById(id).map(appUserDTOMapper);
     }
 
     public void deleteAppUser(Long id){
