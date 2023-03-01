@@ -14,6 +14,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("api/v1/registration")
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class RegistrationController {
     private RegistrationService registrationService;
     private final AppUserRepository appUserRepository;
