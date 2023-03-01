@@ -43,6 +43,20 @@ public class AppUser implements UserDetails {
         this.password = password;
         this.appUserRole = appUserRole;
     }
+    public AppUser(Long id,
+                   String FirstName,
+                   String LastName,
+                   String email,
+                   String password,
+                   AppUserRole appUserRole
+    ) {
+        this.id=id;
+        this.FirstName = FirstName;
+        this.LastName = LastName;
+        this.email = email;
+        this.password = password;
+        this.appUserRole = appUserRole;
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 

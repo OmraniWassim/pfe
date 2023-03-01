@@ -1,16 +1,20 @@
 package com.ltms.pfe.registration;
 
 import com.ltms.pfe.app.user.AppUser;
+import com.ltms.pfe.app.user.AppUserRepository;
 import com.ltms.pfe.app.user.AppUserRole;
 import com.ltms.pfe.app.user.AppUserService;
 import com.ltms.pfe.email.EmailSender;
 import com.ltms.pfe.registration.token.ConfirmationToken;
+import com.ltms.pfe.registration.token.ConfirmationTokenRepository;
 import com.ltms.pfe.registration.token.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,6 +24,8 @@ public class RegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private EmailValidator emailValidator;
     private final EmailSender emailSender;
+    private final AppUserRepository appUserRepository;
+    private final ConfirmationTokenRepository confirmationTokenRepository;
 
     public String register(RegistrationRequest request) {
         boolean isValidEmail=emailValidator.test(request.getEmail());
@@ -46,6 +52,34 @@ public class RegistrationService {
                 buildEmail(request.getEmail(), request.getPassword(), request.getFirst_name(), link));
 
         return token;
+    }
+
+
+    public List<AppUser> findAllAppUsers () {
+        return appUserRepository.findAll();
+    }
+
+    public AppUser updateAppUser(RegistrationRequest request,Long id) {
+        AppUser appUser=
+        new AppUser(
+                id,
+                request.getFirst_name(),
+                request.getLast_name(),
+                request.getEmail(),
+                request.getPassword(),
+                AppUserRole.valueOf(String.valueOf(request.getApp_user_role()))
+
+
+        );
+        return appUserRepository.save(appUser);
+    }
+    public AppUser findById(Long id){
+        return appUserRepository.getById(id);
+    }
+
+    public void deleteAppUser(Long id){
+        confirmationTokenRepository.deleteById(id);
+        appUserRepository.deleteById(id);
     }
     @Transactional
     public String confirmToken(String token) {
