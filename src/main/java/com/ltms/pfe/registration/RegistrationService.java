@@ -8,6 +8,7 @@ import com.ltms.pfe.registration.token.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +30,8 @@ public class RegistrationService {
     public String register(RegistrationRequest request) {
         boolean isValidEmail=emailValidator.test(request.getEmail());
         if(!isValidEmail){
-            throw new IllegalStateException("email n'est pas validee");
+            //throw new IllegalStateException("email n'est pas validee");
+            return ("email n'est pas validee");
         }
 
 
@@ -61,6 +63,7 @@ public class RegistrationService {
                 .collect(Collectors.toList());
     }
 
+
     public void updateAppUser(RegistrationRequest request,Long id) {
         AppUser appUser=
         new AppUser(
@@ -83,6 +86,9 @@ public class RegistrationService {
         confirmationTokenRepository.deleteById(id);
         appUserRepository.deleteById(id);
     }
+
+
+
     @Transactional
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService

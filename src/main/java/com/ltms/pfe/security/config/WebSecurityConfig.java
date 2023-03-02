@@ -25,8 +25,7 @@ public class WebSecurityConfig {
                 .cors().and().csrf().disable()
                 .authorizeRequests().requestMatchers(("/api/v*/registration/**")).permitAll()
                 .anyRequest()
-                .authenticated().and()
-                .formLogin();
+                .authenticated();
           return http.build();
 
     }

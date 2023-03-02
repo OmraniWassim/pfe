@@ -6,6 +6,7 @@ import com.ltms.pfe.app.user.AppUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,14 +26,28 @@ public class RegistrationController {
         List<AppUserDTO> appUsers=registrationService.findAllAppUsers();
         return new ResponseEntity<>(appUsers, HttpStatus.OK);
     }
+
+
     @PostMapping("/add")
     public ResponseEntity<String> register(@RequestBody RegistrationRequest request){
         return new ResponseEntity<>(registrationService.register(request), HttpStatus.OK);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Optional<AppUser> appUser = appUserRepository.findByEmail(loginRequest.getEmail());
+        if ((appUser.get().isEnabled()) &&
+                encoder.matches(loginRequest.getPassword(),appUser.get().getPassword())) {
+            return new ResponseEntity<>(appUser, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+    }
     @GetMapping("/find/{id}")
     public ResponseEntity<Optional<AppUserDTO>> getAppUserById (@PathVariable("id") Long id) {
         Optional<AppUserDTO> appUser = registrationService.findById(id);
-        return new ResponseEntity<>(appUser, HttpStatus.OK);
+        return new ResponseEntity<>(appUser, HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/update/{id}")
