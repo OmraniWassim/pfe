@@ -42,6 +42,24 @@ public class AppUser implements UserDetails {
         this.email = email;
         this.password = password;
         this.appUserRole = appUserRole;
+
+    }
+
+    //for creating and testing but can be removed
+    public AppUser(String FirstName,
+                   String LastName,
+                   String email,
+                   String password,
+                   boolean enabled,
+                   AppUserRole appUserRole
+    ) {
+        this.FirstName = FirstName;
+        this.LastName = LastName;
+        this.email = email;
+        this.password = password;
+        this.enabled=enabled;
+        this.appUserRole = appUserRole;
+
     }
     public AppUser(Long id,
                    String FirstName,
