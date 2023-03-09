@@ -43,9 +43,6 @@ public class ApplicationConfig {
     }
 
 
-    @Bean
-    public LogoutHandler logoutHandler() {
-        return new SecurityContextLogoutHandler();
-    }
+
 
 }

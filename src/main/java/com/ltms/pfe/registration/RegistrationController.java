@@ -2,7 +2,6 @@ package com.ltms.pfe.registration;
 
 import com.ltms.pfe.app.user.AppUser;
 import com.ltms.pfe.app.user.AppUserDTO;
-import com.ltms.pfe.app.user.AppUserDTOMapper;
 import com.ltms.pfe.app.user.AppUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/registration")
@@ -23,7 +20,6 @@ import java.util.stream.Collectors;
 public class RegistrationController {
     private RegistrationService registrationService;
     private final AppUserRepository appUserRepository;
-    private AppUserDTOMapper appUserDTOMapper;
 
 
     @GetMapping("/all")
@@ -46,31 +42,17 @@ public class RegistrationController {
 
     @PostMapping("/login")
     public ResponseEntity<HashMap<String,String>> login(@RequestBody LoginRequest loginRequest) {
-        HashMap<String, String> map = new HashMap<String, String>();
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        Optional<AppUser> appUser = appUserRepository.findByEmail(loginRequest.getEmail());
-        String role=appUser.get().getAppUserRole().toString();
 
-        if (encoder.matches(loginRequest.getPassword(),appUser.get().getPassword())==false) {
-            map.put("reponse", "password");
-            return new ResponseEntity<>(map, HttpStatus.OK);
-
-
-        } else if ((appUser.get().isEnabled()) &&
-        encoder.matches(loginRequest.getPassword(),appUser.get().getPassword())==true) {
-            map.put("reponse", role);
-            return new ResponseEntity<>(map, HttpStatus.OK);
-        } else if (appUser.get().isEnabled()==false) {
-            map.put("reponse", "disabled");
-            return new ResponseEntity<>(map, HttpStatus.OK);
-        }
-
-
-        return null;
+        return new ResponseEntity<>(registrationService.login(loginRequest), HttpStatus.OK);
     }
     @GetMapping("/find/{id}")
     public ResponseEntity<Optional<AppUserDTO>> getAppUserById (@PathVariable("id") Long id) {
         Optional<AppUserDTO> appUser = registrationService.findById(id);
+        return new ResponseEntity<>(appUser, HttpStatus.OK);
+    }
+    @GetMapping("/all/{role}")
+    public ResponseEntity<Optional<AppUserDTO>> getAppUserByRole (@PathVariable("role") String role) {
+        Optional<AppUserDTO> appUser = registrationService.findByAppUserRole(role);
         return new ResponseEntity<>(appUser, HttpStatus.OK);
     }
 

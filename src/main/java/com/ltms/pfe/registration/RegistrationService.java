@@ -6,11 +6,15 @@ import com.ltms.pfe.registration.token.ConfirmationToken;
 import com.ltms.pfe.registration.token.ConfirmationTokenRepository;
 import com.ltms.pfe.registration.token.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -81,11 +85,35 @@ public class RegistrationService {
     public Optional<AppUserDTO> findById(Long id){
         return appUserRepository.findById(id).map(appUserDTOMapper);
     }
+    public Optional<AppUserDTO> findByAppUserRole(String role){
+        return appUserRepository.findByAppUserRole(role).map(appUserDTOMapper);
+    }
 
     public void deleteAppUser(Long id){
         confirmationTokenRepository.deleteById(id);
         appUserRepository.deleteById(id);
     }
+     public HashMap<String,String> login(@RequestBody LoginRequest loginRequest){
+         HashMap<String, String> map = new HashMap<String, String>();
+         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+         Optional<AppUser> appUser = appUserRepository.findByEmail(loginRequest.email());
+         String role=appUser.get().getAppUserRole().toString();
+
+         if (encoder.matches(loginRequest.password(),appUser.get().getPassword())==false) {
+             map.put("reponse", "password");
+             return map;
+
+
+         } else if ((appUser.get().isEnabled()) &&
+                 encoder.matches(loginRequest.password(),appUser.get().getPassword())==true) {
+             map.put("reponse", role);
+             return map;
+         } else if (appUser.get().isEnabled()==false) {
+             map.put("reponse", "disabled");
+             return map;
+         }
+         return null;
+     }
 
 
 

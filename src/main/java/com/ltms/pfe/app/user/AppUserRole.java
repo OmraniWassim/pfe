@@ -7,11 +7,11 @@ import lombok.Setter;
 
 @Getter
 public enum AppUserRole {
-    RESPONSABLE("RESPONSABLE"),
-    CHAUFFEUR("CHAUFFEUR"),
-    RH("RH");
-    private final String appUserRole;
-    AppUserRole(String appUserRole){
-        this.appUserRole=appUserRole;
-    }
+    RESPONSABLE,
+    CHAUFFEUR,
+    RH,
+    PS_manager
+
+
+
 }
