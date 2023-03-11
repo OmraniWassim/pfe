@@ -89,10 +89,13 @@ public class RegistrationService {
         return appUserRepository.findByAppUserRole(role).map(appUserDTOMapper);
     }
 
-    public void deleteAppUser(Long id){
-        confirmationTokenRepository.deleteById(id);
-        appUserRepository.deleteById(id);
+    public void deleteAppUser(Long id) {
+        if (confirmationTokenRepository.findById(id).isPresent()) {
+            confirmationTokenRepository.deleteById(id);
+            appUserRepository.deleteById(id);
+        }
     }
+
      public HashMap<String,String> login(@RequestBody LoginRequest loginRequest){
          HashMap<String, String> map = new HashMap<String, String>();
          BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

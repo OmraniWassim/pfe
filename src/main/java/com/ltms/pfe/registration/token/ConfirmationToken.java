@@ -25,20 +25,20 @@ public class ConfirmationToken {
     )
     private Long id;
 
-    @Column(nullable = false)
+    //nullable
     private String token;
 
-    @Column(nullable = false)
+    //nullable
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    //nullable
     private LocalDateTime expiresAt;
 
     private LocalDateTime confirmedAt;
-
+//nullable
     @ManyToOne
     @JoinColumn(
-            nullable = false,
+
             name = "app_user_id"
     )
     private AppUser appUser;
@@ -52,4 +52,5 @@ public class ConfirmationToken {
         this.expiresAt = expiresAt;
         this.appUser = appUser;
     }
+
 }

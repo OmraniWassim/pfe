@@ -9,8 +9,10 @@ import lombok.Setter;
 public enum AppUserRole {
     RESPONSABLE,
     CHAUFFEUR,
-    RH,
-    PS_manager
+    RH_PS,
+    PS_manager,
+    RH_segment,
+    chef_segment
 
 
 

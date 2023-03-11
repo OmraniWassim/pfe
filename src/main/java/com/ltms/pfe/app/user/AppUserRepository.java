@@ -16,7 +16,6 @@ public interface AppUserRepository extends JpaRepository<AppUser,Long> {
 
 
 
-
     @Transactional
     @Modifying
     @Query("UPDATE AppUser a " +
